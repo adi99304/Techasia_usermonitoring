@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:usermonitoring_system/SignUpScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -89,9 +90,24 @@ class _LoginScreenState extends State<LoginScreen> {
                               horizontal: 32.0,
                               vertical: 16.0,
                             ),
-                            // shape: RoundedRectangleBorder(
-                            //   borderRadius: BorderRadius.circular(24.0),
-                            // ),
+                          ),
+                        ),
+                        SizedBox(height: 16.0),
+                        GestureDetector(
+                          onTap: () {
+                            // Navigate to signup page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => SignupScreen()),
+                            );
+                          },
+                          child: Text(
+                            "Don't have an account? Signup here",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
+                            ),
                           ),
                         ),
                       ],
@@ -106,3 +122,5 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+// Placeholder for SignupScreen
