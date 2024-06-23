@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'TechAsia Login',
-      theme: ThemeData( 
+      theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
@@ -76,21 +76,51 @@ class _LoginScreenState extends State<LoginScreen> {
                           obscureText: true,
                         ),
                         SizedBox(height: 24.0),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Perform login logic here
-                          },
-                          child: Text(
-                            'Login',
-                            style: TextStyle(color: Colors.white),
+                        SizedBox(height: 24.0),
+                        Text(
+                          'LOGIN AS:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 32.0,
-                              vertical: 16.0,
+                        ),
+                        SizedBox(height: 16.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Perform client login logic here
+                              },
+                              child: Text(
+                                'CLIENT',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 32.0,
+                                  vertical: 16.0,
+                                ),
+                              ),
                             ),
-                          ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Perform admin login logic here
+                              },
+                              child: Text(
+                                'ADMIN',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 32.0,
+                                  vertical: 16.0,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 16.0),
                         GestureDetector(
@@ -98,7 +128,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             // Navigate to signup page
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => SignupScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => SignupScreen()),
                             );
                           },
                           child: Text(

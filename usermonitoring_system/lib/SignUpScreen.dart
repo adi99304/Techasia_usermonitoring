@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// ... (previous code for MyApp and LoginScreen remains the same)
 class SignupScreen extends StatefulWidget {
   @override
   _SignupScreenState createState() => _SignupScreenState();
@@ -114,26 +113,60 @@ class _SignupScreenState extends State<SignupScreen> {
                             },
                           ),
                           SizedBox(height: 24.0),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                // Perform signup logic here
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Processing Data')),
-                                );
-                              }
-                            },
-                            child: Text(
-                              'Sign Up',
-                              style: TextStyle(color: Colors.white),
+                          Text(
+                            'SIGN UP AS:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 32.0,
-                                vertical: 16.0,
+                          ),
+                          SizedBox(height: 16.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    // Perform client signup logic here
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Processing Client Signup')),
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  'CLIENT',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 32.0,
+                                    vertical: 16.0,
+                                  ),
+                                ),
                               ),
-                            ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    // Perform admin signup logic here
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Processing Admin Signup')),
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  'ADMIN',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 32.0,
+                                    vertical: 16.0,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
