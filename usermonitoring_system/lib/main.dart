@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'DashBoard.dart';
 import 'dart:convert';
 import 'SignUpScreen.dart';
 
@@ -49,6 +50,20 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login successful')),
       );
+
+      // Navigate to the appropriate screen after successful login
+      if (userType == 'admin') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen()),
+        );
+      } else if (userType == 'client') {
+        // Navigate to client dashboard or other screen
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => ClientDashboardScreen()), // Update with your client screen
+        // );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login failed')),
@@ -112,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         SizedBox(height: 16.0),
-                        TextFormField(
+                        TextFormField( 
                           decoration: InputDecoration(
                             labelText: 'Password',
                             prefixIcon: Icon(Icons.lock),
@@ -163,6 +178,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (_formKey.currentState!.validate()) {
                                   _login('admin');
                                 }
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            DashboardScreen()));
                               },
                               child: Text(
                                 'ADMIN',
