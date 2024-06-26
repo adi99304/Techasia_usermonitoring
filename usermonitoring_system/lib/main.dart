@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:usermonitoring_system/SignUpScreen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'SignUpScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,6 +28,34 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  String _username = '';
+  String _password = '';
+
+  Future<void> _login(String userType) async {
+    final response = await http.post(
+      Uri.parse('http://localhost:5000/login'), // Update with your server URL
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'username': _username,
+        'password': _password,
+        'user_type': userType,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login successful')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,26 +76,40 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             child: Padding(
               padding: const EdgeInsets.all(32.0),
-              child: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                removeBottom: true,
-                child: SingleChildScrollView(
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.6,
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: Form(
+                    key: _formKey,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Image.asset(
                           'assets/t.png',
                           height: 100.0,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              Icons.error,
+                              size: 100.0,
+                              color: Colors.red,
+                            );
+                          },
                         ),
                         SizedBox(height: 16.0),
                         TextFormField(
                           decoration: InputDecoration(
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.email),
+                            labelText: 'Username',
+                            prefixIcon: Icon(Icons.account_circle),
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your username';
+                            }
+                            setState(() {
+                              _username = value;
+                            });
+                            return null;
+                          },
                         ),
                         SizedBox(height: 16.0),
                         TextFormField(
@@ -74,8 +118,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             prefixIcon: Icon(Icons.lock),
                           ),
                           obscureText: true,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            setState(() {
+                              _password = value;
+                            });
+                            return null;
+                          },
                         ),
-                        SizedBox(height: 24.0),
                         SizedBox(height: 24.0),
                         Text(
                           'LOGIN AS:',
@@ -90,7 +142,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                // Perform client login logic here
+                                if (_formKey.currentState!.validate()) {
+                                  _login('client');
+                                }
                               },
                               child: Text(
                                 'CLIENT',
@@ -106,7 +160,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                // Perform admin login logic here
+                                if (_formKey.currentState!.validate()) {
+                                  _login('admin');
+                                }
                               },
                               child: Text(
                                 'ADMIN',
@@ -153,5 +209,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-// Placeholder for SignupScreen
