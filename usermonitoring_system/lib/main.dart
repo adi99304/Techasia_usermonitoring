@@ -30,18 +30,22 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  String _username = '';
-  String _password = '';
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   Future<void> _login(String userType) async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     final response = await http.post(
-      Uri.parse('http://localhost:5000/login'), // Update with your server URL
+      Uri.parse('http://localhost:5000/login'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        'username': _username,
-        'password': _password,
+        'username': _usernameController.text,
+        'password': _passwordController.text,
         'user_type': userType,
       }),
     );
@@ -51,17 +55,17 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(content: Text('Login successful')),
       );
 
-      // Navigate to the appropriate screen after successful login
       if (userType == 'admin') {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => DashboardScreen()),
         );
       } else if (userType == 'client') {
         // Navigate to client dashboard or other screen
-        // Navigator.push(
+        // Uncomment and update when you have a ClientDashboardScreen
+        // Navigator.pushReplacement(
         //   context,
-        //   MaterialPageRoute(builder: (context) => ClientDashboardScreen()), // Update with your client screen
+        //   MaterialPageRoute(builder: (context) => ClientDashboardScreen()),
         // );
       }
     } else {
@@ -69,6 +73,13 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(content: Text('Login failed')),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -112,6 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(height: 16.0),
                         TextFormField(
+                          controller: _usernameController,
                           decoration: InputDecoration(
                             labelText: 'Username',
                             prefixIcon: Icon(Icons.account_circle),
@@ -120,14 +132,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your username';
                             }
-                            setState(() {
-                              _username = value;
-                            });
                             return null;
                           },
                         ),
                         SizedBox(height: 16.0),
-                        TextFormField( 
+                        TextFormField(
+                          controller: _passwordController,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             prefixIcon: Icon(Icons.lock),
@@ -137,9 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your password';
                             }
-                            setState(() {
-                              _password = value;
-                            });
                             return null;
                           },
                         ),
@@ -156,43 +163,36 @@ class _LoginScreenState extends State<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  _login('client');
-                                }
-                              },
+                              onPressed: () => _login('client'),
                               child: Text(
                                 'CLIENT',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 32.0,
-                                  vertical: 16.0,
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.black),
+                                padding: MaterialStateProperty.all<
+                                    EdgeInsetsGeometry>(
+                                  EdgeInsets.symmetric(
+                                      horizontal: 32.0, vertical: 16.0),
                                 ),
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  _login('admin');
-                                }
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            DashboardScreen()));
-                              },
+                              onPressed: () => _login('admin'),
                               child: Text(
                                 'ADMIN',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 32.0,
-                                  vertical: 16.0,
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.black),
+                                padding: MaterialStateProperty.all<
+                                    EdgeInsetsGeometry>(
+                                  EdgeInsets.symmetric(
+                                      horizontal: 32.0, vertical: 16.0),
                                 ),
                               ),
                             ),
@@ -201,7 +201,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 16.0),
                         GestureDetector(
                           onTap: () {
-                            // Navigate to signup page
                             Navigator.push(
                               context,
                               MaterialPageRoute(
