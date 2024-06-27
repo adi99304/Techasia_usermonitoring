@@ -13,6 +13,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: Text('Dashboard'),
       ),
+      backgroundColor: Colors.black
+      ,
+    
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -62,6 +65,7 @@ class DataControlScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
@@ -149,6 +153,7 @@ class _DataTableScreenState extends State<DataTableScreen> {
       appBar: AppBar(
         title: Text('Data Table'),
       ),
+      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: SingleChildScrollView(
