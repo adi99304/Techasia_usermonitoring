@@ -1,4 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'TechAsia Login',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: DashboardScreen(),
+    );
+  }
+}
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -88,7 +109,9 @@ class DataControlScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => DataTableScreen()),
+                            builder: (context) => DataTableScreen(
+                                editable: false, fetchData: true),
+                          ),
                         );
                       },
                       child: Text('View Data'),
@@ -99,8 +122,9 @@ class DataControlScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  DataTableScreen(editable: true)),
+                            builder: (context) => DataTableScreen(
+                                editable: true, fetchData: false),
+                          ),
                         );
                       },
                       child: Text('Edit Data'),
@@ -119,8 +143,9 @@ class DataControlScreen extends StatelessWidget {
 
 class DataTableScreen extends StatefulWidget {
   final bool editable;
+  final bool fetchData;
 
-  DataTableScreen({this.editable = false});
+  DataTableScreen({this.editable = false, this.fetchData = false});
 
   @override
   _DataTableScreenState createState() => _DataTableScreenState();
@@ -138,6 +163,38 @@ class _DataTableScreenState extends State<DataTableScreen> {
     super.initState();
     for (int i = 0; i < initialColumns; i++) {
       _headerControllers[i].text = String.fromCharCode(65 + i); // A, B, C, ...
+    }
+    if (widget.fetchData) {
+      _fetchData();
+    }
+  }
+
+  Future<void> _fetchData() async {
+    try {
+      final response =
+          await http.get(Uri.parse('http://127.0.0.1:5000/get-data'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          _controllers.clear();
+          for (var row in data) {
+            List<TextEditingController> rowControllers = [];
+            for (int i = 0; i < initialColumns; i++) {
+              String columnName = String.fromCharCode(65 + i);
+              rowControllers
+                  .add(TextEditingController(text: row[columnName] ?? ''));
+            }
+            _controllers.add(rowControllers);
+          }
+        });
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
     }
   }
 
@@ -169,6 +226,40 @@ class _DataTableScreenState extends State<DataTableScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _saveData() async {
+    List<Map<String, dynamic>> data = [];
+
+    for (int i = 0; i < _controllers.length; i++) {
+      for (int j = 0; j < initialColumns; j++) {
+        data.add({
+          'row_number': i + 1,
+          'column_name': String.fromCharCode(65 + j),
+          'value': _controllers[i][j].text,
+        });
+      }
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://127.0.0.1:5000/save-data'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'data': data}),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data saved successfully!')),
+        );
+      } else {
+        throw Exception('Failed to save data');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
   }
 
   @override
@@ -237,38 +328,13 @@ class _DataTableScreenState extends State<DataTableScreen> {
             if (widget.editable)
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Implement save functionality here
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Data saved!')),
-                    );
-                  },
+                  onPressed: _saveData,
                   child: Text('Save'),
                 ),
               ),
           ],
         ),
       ),
-    );
-  }
-}
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'TechAsia Login',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: DataTableScreen(
-          editable: true), // Set this to false to disable editing
     );
   }
 }
